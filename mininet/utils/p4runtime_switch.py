@@ -42,7 +42,7 @@ class P4RuntimeSwitch(P4Switch):
                  **kwargs):
         Switch.__init__(self, name, **kwargs)
         sw_path = '/usr/bin/simple_switch_grpc'
-        json_path = '/home/liquid/lab/p4lab/ngsdn-tutorial/p4src/build/bmv2.json'
+        json_path = '/home/liquid/lab/p4lab/my-p4/p4src/build/bmv2.json'
         assert (sw_path)
         self.sw_path = sw_path
         # make sure that the provided sw_path is valid

@@ -1,0 +1,22 @@
+p4 compile:
+p4c-bm2-ss --arch v1model -o p4src/build/bmv2.json --p4runtime-files p4src/build/p4info.txt --Wdisable=unsupported p4src/main.p4
+
+python3 /home/liquid/lab/p4lab/my-p4/mininet/utils/topo1.py
+
+
+python3 -m p4runtime_sh --grpc-addr localhost:50051 \
+--device-id 0 --election-id 0,1 --config /home/liquid/lab/p4lab/my-p4/p4src/build/p4info.txt,/home/liquid/lab/p4lab/my-p4/p4src/build/bmv2.json
+
+te = table_entry["IngressPipeImpl.routing_v4"] (action = "IngressPipeImpl.set_next_hop_v4")
+te.match["hdr.ipv4.dst_addr"] = ("11.0.2.2")
+te.action["next_hop"] = ("00:00:00:00:00:1a")
+te.insert()
+te.match["hdr.ipv4.dst_addr"] = ("11.0.2.3")
+te.action["next_hop"] = ("00:00:00:00:00:1b")
+te.insert()
+me = table_entry["IngressPipeImpl.multicast"] (action = "IngressPipeImpl.set_multicast_group")
+me.match["hdr.ethernet.dst_addr"] = ("FF:FF:FF:FF:FF:FF&&&FF:FF:FF:FF:FF:FF")
+me.priority = 100
+me.action["gid"] = ("255")
+me.insert()
+
