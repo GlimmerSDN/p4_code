@@ -38,7 +38,7 @@ class IPv6Host(Host):
         super(IPv6Host, self).terminate() 
         
 
-
+#
 def main():
    # controller = RemoteController('c0', ip="127.0.0.1",port=6653)
     net = Mininet(link=TCLink)
