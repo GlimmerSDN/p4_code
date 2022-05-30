@@ -3,6 +3,30 @@ pkg_info {
 }
 tables {
   preamble {
+    id: 34391805
+    name: "IngressPipeImpl.l2_exact_table"
+    alias: "l2_exact_table"
+  }
+  match_fields {
+    id: 1
+    name: "hdr.ethernet.dst_addr"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  action_refs {
+    id: 24677122
+  }
+  action_refs {
+    id: 28396054
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  const_default_action_id: 28396054
+  direct_resource_ids: 334804396
+  size: 1024
+}
+tables {
+  preamble {
     id: 47351267
     name: "IngressPipeImpl.multicast"
     alias: "multicast"
@@ -70,29 +94,6 @@ tables {
   direct_resource_ids: 326544105
   size: 1024
 }
-tables {
-  preamble {
-    id: 42964298
-    name: "IngressPipeImpl.ndp_reply_table"
-    alias: "ndp_reply_table"
-  }
-  match_fields {
-    id: 1
-    name: "hdr.ndp.target_addr"
-    bitwidth: 128
-    match_type: EXACT
-  }
-  action_refs {
-    id: 26505845
-  }
-  action_refs {
-    id: 21257015
-    annotations: "@defaultonly"
-    scope: DEFAULT_ONLY
-  }
-  direct_resource_ids: 323533279
-  size: 1024
-}
 actions {
   preamble {
     id: 21257015
@@ -106,6 +107,18 @@ actions {
     id: 28396054
     name: "IngressPipeImpl.drop"
     alias: "drop"
+  }
+}
+actions {
+  preamble {
+    id: 24677122
+    name: "IngressPipeImpl.set_egress_port"
+    alias: "set_egress_port"
+  }
+  params {
+    id: 1
+    name: "port_num"
+    bitwidth: 9
   }
 }
 actions {
@@ -144,18 +157,6 @@ actions {
     bitwidth: 48
   }
 }
-actions {
-  preamble {
-    id: 26505845
-    name: "IngressPipeImpl.ndp_ns_to_na"
-    alias: "ndp_ns_to_na"
-  }
-  params {
-    id: 1
-    name: "target_mac"
-    bitwidth: 48
-  }
-}
 action_profiles {
   preamble {
     id: 287000679
@@ -165,6 +166,17 @@ action_profiles {
   table_ids: 34858041
   with_selector: true
   size: 64
+}
+direct_counters {
+  preamble {
+    id: 334804396
+    name: "l2_exact_table_counter"
+    alias: "l2_exact_table_counter"
+  }
+  spec {
+    unit: BOTH
+  }
+  direct_table_id: 34391805
 }
 direct_counters {
   preamble {
@@ -198,17 +210,6 @@ direct_counters {
     unit: BOTH
   }
   direct_table_id: 43871537
-}
-direct_counters {
-  preamble {
-    id: 323533279
-    name: "IngressPipeImpl.ndp_reply_table_counter"
-    alias: "ndp_reply_table_counter"
-  }
-  spec {
-    unit: BOTH
-  }
-  direct_table_id: 42964298
 }
 controller_packet_metadata {
   preamble {

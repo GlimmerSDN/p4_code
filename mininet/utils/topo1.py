@@ -49,19 +49,14 @@ def main():
         
 
         # IPv6 hosts attached to leaf 1
-    h1a = net.addHost('h1a',cls=P4Host,mac="00:00:00:00:00:1A")
-    h1b = net.addHost('h1b',cls=P4Host,mac="00:00:00:00:00:1B")
+    h1a = net.addHost('h1a',mac="00:00:00:00:00:1A")
+    h1b = net.addHost('h1b',mac="00:00:00:00:00:1B")
     
     net.addLink(h1a, sw1)  # port 3
     net.addLink(h1b, sw1)  # port 4
-    h1a.cmd("ifconfig h1a-eth0 11.0.2.2 netmask 255.255.255.0 broadcast 11.0.2.255")
-    h1b.cmd("ifconfig h1b-eth0 10.0.2.2 netmask 255.255.255.0 broadcast 10.0.2.255")
-    h1a.cmd("ip -4 route add default via 11.0.2.1",
-        	"arp -i eth0 -s 11.0.2.1 72:79:26:f0:2a:84"
-            'ip -6 addr add f1::3 dev eth0')
-    h1b.cmd("ip -4 route add default via 10.0.2.1",
-        	"arp -i eth0 -s 10.0.2.1 f6:45:e5:8f:aa:96"
-            'ip -6 addr add f2::4 dev eth0')
+    h1a.cmd("ifconfig h1a-eth0 11.0.2.2 netmask 255.255.255.0")
+    h1b.cmd("ifconfig h1b-eth0 11.0.2.3 netmask 255.255.255.0")
+
     
         # IPv6 hosts attached to leaf 2
     net.start()

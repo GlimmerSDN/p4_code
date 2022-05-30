@@ -515,6 +515,7 @@ control VerifyChecksumImpl(inout parsed_headers_t hdr,
         actions = {
 	        set_next_hop;
         }
+        default_actions = NoAction;
         counters = routing_v6_counter;
         implementation = ip6_ecmp_selector;
     }
@@ -558,9 +559,7 @@ control VerifyChecksumImpl(inout parsed_headers_t hdr,
         counters = ndp_reply_table_counter;
     }
     apply{
-        if (hdr.icmpv6.isValid() && hdr.icmpv6.type == ICMP6_TYPE_NS) {
-            ndp_reply_table.apply();
-        }
+        local_metadata.skip_l2 = false;
         
         if(hdr.ipv4.isValid()){
             routing_v4.apply();
@@ -568,11 +567,16 @@ control VerifyChecksumImpl(inout parsed_headers_t hdr,
 	        drop();
 	    }
         }
+        
         if(hdr.ipv6.isValid()){
             routing_v6.apply();
 
         }
-        multicast.apply();
+        if (!local_metadata.skip_l2) {
+            if (!l2_exact_table.apply().hit) {
+       	      	multicast.apply();
+	        }	
+	    }
     }
     }
 

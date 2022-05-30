@@ -1,11 +1,20 @@
 p4 compile:
+
 p4c-bm2-ss --arch v1model -o p4src/build/bmv2.json --p4runtime-files p4src/build/p4info.txt --Wdisable=unsupported p4src/main.p4
+
+
+start mininet topo:
 
 python3 /home/liquid/lab/p4lab/my-p4/mininet/utils/topo1.py
 
 
+link p4-runtime-shell to switch:
+
 python3 -m p4runtime_sh --grpc-addr localhost:50051 \
 --device-id 0 --election-id 0,1 --config /home/liquid/lab/p4lab/my-p4/p4src/build/p4info.txt,/home/liquid/lab/p4lab/my-p4/p4src/build/bmv2.json
+
+
+insert tables and multicast-groups:
 
 te = table_entry["IngressPipeImpl.routing_v4"] (action = "IngressPipeImpl.set_next_hop_v4")
 te.match["hdr.ipv4.dst_addr"] = ("11.0.2.2")
@@ -14,9 +23,18 @@ te.insert()
 te.match["hdr.ipv4.dst_addr"] = ("11.0.2.3")
 te.action["next_hop"] = ("00:00:00:00:00:1b")
 te.insert()
+mcge = multicast_group_entry(1)
+mcge.add(2,1).add(1,2)
+mcge.insert()
 me = table_entry["IngressPipeImpl.multicast"] (action = "IngressPipeImpl.set_multicast_group")
 me.match["hdr.ethernet.dst_addr"] = ("FF:FF:FF:FF:FF:FF&&&FF:FF:FF:FF:FF:FF")
-me.priority = 100
-me.action["gid"] = ("255")
+me.priority = 1
+me.action["gid"] = ("1")
 me.insert()
-
+ce = table_entry["IngressPipeImpl.l2_exact_table"] (action = "IngressPipeImpl.set_egress_port")
+ce.match["hdr.ethernet.dst_addr"] = ("00:00:00:00:00:1b")
+ce.action["port_num"] = ("2")
+ce.insert()
+ce.match["hdr.ethernet.dst_addr"] = ("00:00:00:00:00:1a")
+ce.action["port_num"] = ("1")
+ce.insert()
